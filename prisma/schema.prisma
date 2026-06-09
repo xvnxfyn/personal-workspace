@@ -1,0 +1,159 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id         String     @id @default(uuid())
+  email      String     @unique
+  name       String
+  avatar     String?
+  language   String     @default("English (US)")
+  timezone   String     @default("Asia/Jakarta")
+  theme      String     @default("Light")
+  role       String     @default("owner")
+  lastActive DateTime   @default(now())
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  pages      Page[]
+  tasks      Task[]
+  habits     Habit[]
+  activities Activity[]
+  assets     Asset[]
+  fitness    FitnessRecord[]
+  notifications Notification[]
+}
+
+model Page {
+  id         String   @id @default(uuid())
+  title      String
+  emoji      String   @default("🚀")
+  coverImage String?
+  isFavorite Boolean  @default(false)
+  isTrash    Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  blocks     Block[]
+  attachments Attachment[]
+}
+
+enum BlockType {
+  TEXT
+  HEADING_1
+  TODO
+  TABLE
+  KANBAN
+  IMAGE
+}
+
+model Block {
+  id        String    @id @default(uuid())
+  type      BlockType @default(TEXT)
+  content   String
+  order     Int       @default(0)
+  pageId    String
+  page      Page      @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Task {
+  id        String   @id @default(uuid())
+  name      String
+  status    String
+  priority  String
+  dueDate   String?
+  reminderAt String?
+  order     Int      @default(0)
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Habit {
+  id        String     @id @default(uuid())
+  name      String
+  icon      String     @default("water_drop")
+  userId    String?
+  user      User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  logs      HabitLog[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model HabitLog {
+  id        String   @id @default(uuid())
+  habitId   String
+  habit     Habit    @relation(fields: [habitId], references: [id], onDelete: Cascade)
+  date      String
+  completed Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Asset {
+  id        String   @id @default(uuid())
+  name      String
+  category  String   @default("General")
+  value     Float    @default(0)
+  notes     String?
+  fileName  String?
+  fileData  String?
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model FitnessRecord {
+  id        String   @id @default(uuid())
+  date      String
+  type      String
+  metric    String
+  value     Float
+  notes     String?
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
+
+model Attachment {
+  id        String   @id @default(uuid())
+  fileName  String
+  fileData  String
+  area      String   @default("page")
+  pageId    String?
+  page      Page?    @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  title     String
+  message   String
+  dueAt     String?
+  read      Boolean  @default(false)
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
+
+model Activity {
+  id         String   @id @default(uuid())
+  userName   String
+  avatarUrl  String?
+  action     String
+  targetName String
+  detail     String
+  timeStr    String
+  category   String
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+}

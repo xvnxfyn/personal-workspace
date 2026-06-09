@@ -1,0 +1,6 @@
+{
+  "name": "Personal Workspace",
+  "description": "A collaborative and personal workspace inspired by Notion featuring a block-based editor, habit tracker, task manager, and custom pages.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
